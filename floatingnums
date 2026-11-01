@@ -1,0 +1,61 @@
+import raylib as rl
+from pyray import*
+
+class Text:
+    def __init__(self,text,size,posx,posy,color,font,spacing,time,slowness):
+        self.text = text
+        self.size = size
+        self.posx = posx
+        self.posy = posy
+        self.color = color
+        self.font = font
+        self.spacing = spacing
+        self.frame = 0
+        self.time = time
+        self.slowness = slowness
+        self.opacity = 255
+        self.color = Color(0,255,0,self.opacity)
+    def reset(self,posx,posy):
+        self.frame = 0
+        self.posy = posy
+        self.posx = posx
+    def FloatTextex(self):
+        draw_text_ex(self.font,str(self.text),Vector2(self.posx,self.posy),self.size,self.spacing,self.color)
+    def FloatText(self):
+        if self.frame <= self.time:
+            draw_text(str(self.text),self.posx,self.posy,self.size,self.color)
+        
+        else:
+            return
+        if self.opacity <=1:
+            self.opacity = 0
+        self.color = Color(0,255,0,self.opacity)
+        self.frame +=1
+        if self.frame % self.slowness ==0:
+            self.opacity -=5
+            self.posy -= int(5)
+
+currenttext = []
+mouse = get_mouse_position()
+addText : Text = Text("+100",40,mouse.x,mouse.y,GREEN,0,10,1000,5)
+init_window(1280,720,"floating numbers")
+set_target_fps(60)
+while not window_should_close():
+    begin_drawing()
+    clear_background(BLACK)
+    if is_mouse_button_down(rl.MOUSE_BUTTON_LEFT):
+        mouse = get_mouse_position()
+        currenttext.append(Text("+100",40,int(mouse.x)-50,int(mouse.y),GREEN,0,10,2000,1)) #this adds to the list     
+         #resets the value of the text before it can be spawned again
+
+    for i in range(0,len(currenttext)):
+        currenttext[i].FloatText() #this draws items that are within the list
+        if currenttext[i].opacity <=0:
+            currenttext[i]
+
+
+
+    # print(get_fps())
+
+    end_drawing()
+close_window()
