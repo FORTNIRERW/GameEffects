@@ -1,0 +1,92 @@
+
+import random
+import raylib as rl
+from pyray import *
+
+posx = 100
+posy = 100
+
+
+# all we need to do is rotate an object
+#the intensity is based on how much rotation is being done-- the increment
+# the length of the rotation will be the time
+# and the number will tell us how many times we do this
+
+
+# increase a number when it gets to length
+# then we decrease the number when it gets to -length
+# then we add 1 to the times
+# and loop until times == times
+class Shake:
+    def __init__(self,intensity_min,intensity_max,length_min,length_max,times,currentvalue):
+        self.intensity_min = intensity_min
+        self.intensity_max = intensity_max
+        self.length_min = length_min
+        self.length_max = length_max
+        self.times = times
+        self.currentvalue = currentvalue
+        self.original_length = 0
+        self.original_value = currentvalue
+    def Randomize(self):
+        self.intensity = random.uniform(self.intensity_min,self.intensity_max)
+        self.length = random.uniform(self.length_min,self.length_max)
+        self.original_length = 0
+        self.shake = True
+
+    def NotRandom(self):
+        self.intensity = self.intensity_max
+        self.length = self.length_max
+        self.original_length = 0
+        self.shake = True
+
+    def shake_ya_booty(self):
+        if self.shake == True:
+            self.currentvalue += self.intensity
+            self.original_length += self.intensity
+            if abs(self.original_length) >= abs(self.length):
+                self.intensity = -self.intensity
+                self.times -=1
+                if self.times <= 0:
+                    self.currentvalue = self.original_value
+                    self.shake = False
+            
+
+        
+
+shake = False
+shakerotation :Shake = Shake(10,15,10,11,10,0)
+shakeposx :Shake = Shake(10,15,10,11,10,posx)
+shakeposy :Shake = Shake(10,15,10,11,10,posy)
+
+rotation = 0
+set_target_fps(60)
+
+init_window(1280,720,"shake effect")
+while not window_should_close():
+    begin_drawing()
+        
+    clear_background(BLACK)
+    bluerectangle = Rectangle(shakeposx.currentvalue,shakeposy.currentvalue,100,100)
+    # draw_rectangle_pro(bluerectangle,Vector2(50,50),shakerotation.currentvalue,BLUE)
+    draw_rectangle_pro(bluerectangle,Vector2(50,50),0,BLUE)
+    if is_mouse_button_pressed(rl.MOUSE_BUTTON_LEFT):
+        shakerotation :Shake = Shake(1,20,10,80,10,0)
+        shakeposx :Shake = Shake(1,10,10,160,10,posx)
+        shakeposy :Shake = Shake(1,5,10,80,10,posy)
+        shakerotation.NotRandom()
+        shakeposx.NotRandom()
+        shakeposy.NotRandom()
+        shake = True
+    if shake == True:
+        shakerotation.shake_ya_booty()
+        shakeposx.shake_ya_booty()
+        shakeposy.shake_ya_booty()
+
+
+
+
+
+
+    end_drawing()
+    if is_key_pressed(rl.KEY_ESCAPE):
+        close_window()
