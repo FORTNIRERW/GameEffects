@@ -1,0 +1,111 @@
+
+import random
+import raylib as rl
+from pyray import *
+
+
+
+#create a random number of particles from a range
+#make those particles go into a random direction x and y
+#give the particles a random speed
+# make the particles slowly get smaller
+#give the particles ranom colors from a list
+#give the particles random sizes in a range
+#time on screen
+#how much they slow down by
+#initial velocity
+
+
+class SpawnParticles:
+    def __init__(self,min_particles,max_particles,min_speed,max_speed,min_size,max_size,gravity,colors:list,posx,posy,shrink_rate,shrink_factor,cutoff,remove):
+        self.max_particles = max_particles
+        self.min_particles = min_particles
+        self.min_speed = min_speed
+        self.max_speed = max_speed
+        self.min_size = min_size
+        self.max_size = max_size
+        self.gravity = gravity
+        self.colors = colors
+        self.posx = posx
+        self.posy = posy
+        self.shrink_rate = shrink_rate
+        self.shrink_factor = shrink_factor
+        self.cutoff = cutoff
+        self.remove = remove
+        self.position = Vector2(self.posx,self.posy)
+        self.particle_num = random.randrange(self.min_particles,self.max_particles)
+        self.list_resistance = []
+        self.list_speed = []
+        self.list_size = []
+        self.list_direction_x = []
+        self.list_direction_y = []
+        self.list_position = []
+        self.list_position_x = []
+        self.list_position_y = []
+        #defined vars
+        
+
+
+
+    def Randomize(self):
+        self.particle_num = random.randrange(self.min_particles,self.max_particles)
+        self.list_size = []
+        self.list_speed = []
+        self.list_resistance = []
+        self.list_position = []
+        self.list_position_x = []
+        self.list_position_y = []
+        self.list_colors = []
+        for i in range(self.particle_num):
+            self.list_size.append(random.randrange(self.min_size,self.max_size))
+            self.list_speed.append(random.randrange(self.min_speed,self.max_speed))
+            self.list_resistance.append(random.randrange(self.min_resistance,self.max_resistance))
+            self.list_direction_x.append(random.randrange(-10,20,1))#firgure out how to make this a float
+            self.list_direction_y.append(random.randrange(-10,20,1))# figure out how to make this a float
+            self.list_position_x.append(self.position.x)
+            self.list_position_y.append(self.position.y)
+            self.list_colors.append(random.choice(self.colors))
+    def Spawn(self):
+        for i in range(self.particle_num):
+            draw_rectangle_v(Vector2(self.list_position_x[i-1],self.list_position_y[i-1]),Vector2(self.list_size[i-1],self.list_size[i-1]),self.list_colors[i-1])
+            self.list_position_x[i-1] += self.list_direction_x[i-1] * self.list_speed[i-1]- self.list_resistance[i-1]
+            self.list_position_y[i-1] += self.list_direction_y[i-1] * self.list_speed[i-1]- self.list_resistance[i-1]
+            self.list_size[i-1] -= self.shrink_rate#*(self.list_size[i-1]/self.shrink_factor)
+            if self.list_size[i-1] <= self.cutoff:
+                self.list_size[i-1] = 0
+            if self.list_size[i-1] <= self.remove:
+                break
+
+            #create a bunch of cubes --CHECK
+            #move all of the cubes away from the starting point
+            #slowly decrease speed
+            #decrease size
+particle = -1
+spawn_particles = False
+position = get_mouse_position()
+particlelist = []
+set_target_fps(60)
+init_window(1280,720,"PARTICLES")
+while not window_should_close():
+    begin_drawing()
+    clear_background(BLACK)
+    if is_mouse_button_pressed(rl.MOUSE_BUTTON_LEFT):
+        position = get_mouse_position()
+        particlelist.append(SpawnParticles(20,1000,1,2,30,100,1,10,1,[RED,ORANGE,YELLOW],position.x,position.y,0.3,5,0.001,0.001))
+        spawn_particles = False
+        spawn_particles = True
+        particle+=1
+        particlelist[particle].Randomize()
+    if spawn_particles == True:
+        for particles in particlelist:
+            particles.Spawn()
+
+
+
+
+
+
+    end_drawing()
+
+    if is_key_pressed(rl.KEY_ESCAPE):
+        close_window()
